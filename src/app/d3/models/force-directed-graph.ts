@@ -14,51 +14,11 @@ export class ForceDirectedGraph {
   public ticker: EventEmitter<d3.Simulation<Node, Link>> = new EventEmitter();
   public simulation: d3.Simulation<any, any>;
 
-  public nodes: Node[] = [];
-  public links: Link[] = [];
+  public data;
 
-  constructor(nodes, links, options: { width; height }) {
-    this.nodes = nodes;
-    this.links = links;
-
+  constructor(data, options: { width; height }) {
+    this.data = data;
     this.initSimulation(options);
-  }
-
-  // connectNodes(source, target) {
-  //   let link;
-
-  //   if (!this.nodes[source] || !this.nodes[target]) {
-  //     throw new Error('One of the nodes does not exist');
-  //   }
-
-  //   link = new Link(source, target);
-  //   this.simulation.stop();
-  //   this.links.push(link);
-  //   this.simulation.alphaTarget(0.3).restart();
-
-  //   this.initLinks();
-  // }
-
-  initNodes() {
-    if (!this.simulation) {
-      throw new Error('simulation was not initialized yet');
-    }
-
-    this.simulation.nodes(this.nodes);
-  }
-
-  initLinks() {
-    if (!this.simulation) {
-      throw new Error('simulation was not initialized yet');
-    }
-
-    this.simulation.force(
-      'links',
-      d3
-        .forceLink(this.links)
-        .id((d) => d['id'])
-        .strength(0)
-    );
   }
 
   initSimulation(options) {
@@ -68,30 +28,114 @@ export class ForceDirectedGraph {
 
     /** Creating the simulation */
     if (!this.simulation) {
-      const ticker = this.ticker;
+      const root = d3.hierarchy(this.data);
+      const links =
+        root.links() as d3.SimulationLinkDatum<d3.SimulationNodeDatum>[];
+      const nodes = root.descendants() as d3.SimulationNodeDatum[];
+
+      const drag = (simulation) => {
+        function dragstarted(event, d) {
+          if (!event.active) simulation.alphaTarget(0.3).restart();
+          d.fx = d.x;
+          d.fy = d.y;
+        }
+
+        function dragged(event, d) {
+          d.fx = event.x;
+          d.fy = event.y;
+        }
+
+        function dragended(event, d) {
+          if (!event.active) simulation.alphaTarget(0);
+          d.fx = null;
+          d.fy = null;
+        }
+
+        return d3
+          .drag()
+          .on('start', dragstarted)
+          .on('drag', dragged)
+          .on('end', dragended);
+      };
 
       this.simulation = d3
-        .forceSimulation()
+        .forceSimulation(nodes)
         .force(
-          'charge',
-          d3.forceManyBody().strength((d) => FORCES.CHARGE * d['r'])
+          'link',
+          d3
+            .forceLink(links)
+            // .id((d) => d.id)
+            // .distance(0)
+            .strength(0.5)
         )
         .force(
-          'collide',
-          d3
-            .forceCollide()
-            .strength(FORCES.COLLISION)
-            .radius((d) => d['r'] + 10)
-            .iterations(2)
-        );
+          'charge',
+          d3.forceManyBody().strength((d) => -1000)
+        )
+        .force('x', d3.forceX())
+        .force('y', d3.forceY());
 
-      // Connecting the d3 ticker to an angular event emitter
-      this.simulation.on('tick', function () {
-        ticker.emit(this);
+      const svg = d3
+        .select('svg')
+        .attr('style', 'width: 100%; height: auto; font: 10px sans-serif;');
+
+      const link = svg
+        .append('g')
+        .attr('stroke', '#999')
+        .attr('stroke-opacity', 0.6)
+        .selectAll('line')
+        .data(links)
+        .join('line');
+
+      const node = svg
+        .append('g')
+        .attr('fill', '#fff')
+        .attr('stroke', '#000')
+        .attr('stroke-width', 1.5)
+        .selectAll('circle')
+        .data(nodes)
+        .join('circle')
+        .attr('fill', (d: Node) => (d.children ? 'blue' : 'green'))
+        // .attr('stroke', (d: Node) => (d.children ? null : '#fff'))
+        .attr('r', (d: Node) => (d.children ? 20 : 15))
+        .call(drag(this.simulation));
+
+      var label = svg
+        .selectAll('.mytext')
+        .data(nodes)
+        .enter()
+        .append('text')
+        .text(function (d) {
+          // @ts-ignore
+          return d.data.name;
+        })
+        .style('text-anchor', 'middle')
+        .style('fill', 'white')
+        .style('font-family', 'Arial')
+        .style('font-size', 12);
+
+      this.simulation.on('tick', () => {
+        link
+          // @ts-ignore
+          .attr('x1', (d) => d.source.x)
+          // @ts-ignore
+          .attr('y1', (d) => d.source.y)
+          // @ts-ignore
+          .attr('x2', (d) => d.target.x)
+          // @ts-ignore
+          .attr('y2', (d) => d.target.y);
+
+        // @ts-ignore
+        node.attr('cx', (d) => d.x).attr('cy', (d) => d.y);
+
+        label
+          .attr('x', function (d) {
+            return d.x;
+          })
+          .attr('y', function (d) {
+            return d.y + 5;
+          });
       });
-
-      this.initNodes();
-      this.initLinks();
     }
 
     /** Updating the central force of the simulation */

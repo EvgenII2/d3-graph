@@ -19,11 +19,11 @@ export class GraphComponent implements OnInit, AfterViewInit {
   get options() {
     return (this._options = {
       width: window.innerWidth,
-      height: window.innerHeight,
+      height: 800,
     });
   }
 
-  @Input('nodes') nodes;
+  @Input('data') nodes;
   @Input('links') links;
 
   @HostListener('window:resize', ['$event']) onResize(event) {
@@ -37,7 +37,6 @@ export class GraphComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.graph = this.d3Service.getForceDirectedGraph(
       this.nodes,
-      this.links,
       this.options
     );
 

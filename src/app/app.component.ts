@@ -9,58 +9,146 @@ import APP_CONFIG from './app.config';
 })
 export class AppComponent {
   title = 'd3-graph-example';
-  nodes: Node[] = [];
-  links: Link[] = [];
 
-  constructor() {
-    const N = APP_CONFIG.N,
-      getIndex = (number) => number - 1;
+  data = {
+    name: '1',
+    children: [
+      {
+        name: '2',
+        children: [
+          {
+            name: '16',
+            children: [
+              {
+                name: '17',
+                children: [],
+                value: 17,
+              },
+              {
+                name: '18',
+                children: [],
+                value: 18,
+              },
+              {
+                name: '19',
+                children: [],
+                value: 19,
+              },
+              {
+                name: '20',
+                children: [],
+                value: 20,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        name: '3',
+        children: [],
+      },
+      {
+        name: '4',
+        children: [
+          {
+            name: '21',
+            children: [
+              {
+                name: '22',
+                children: [],
+                value: 22,
+              },
+              {
+                name: '23',
+                children: [],
+                value: 23,
+              },
+              {
+                name: '24',
+                children: [],
+                value: 24,
+              },
+              {
+                name: '25',
+                children: [],
+                value: 25,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        name: '5',
+        children: [
+          {
+            name: '26',
+            children: [
+              {
+                name: '27',
+                children: [],
+                value: 27,
+              },
+              {
+                name: '28',
+                children: [],
+                value: 28,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        name: '6',
+        children: [
+          {
+            name: '7',
+            children: [
+              {
+                name: '8',
+                children: [],
+                value: 8,
+              },
+              {
+                name: '9',
+                children: [
+                  {
+                    name: '14',
+                    children: [],
+                    value: 14,
+                  },
+                  {
+                    name: '15',
+                    children: [],
+                    value: 15,
+                  },
+                ],
+              },
+              {
+                name: '10',
+                children: [],
+                value: 10,
+              },
+              {
+                name: '11',
+                children: [],
+                value: 11,
+              },
+              {
+                name: '12',
+                children: [],
+                value: 12,
+              },
+              {
+                name: '13',
+                children: [],
+                value: 13,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  };
 
-    /** constructing the nodes array */
-    for (let i = 1; i <= N; i++) {
-      this.nodes.push(new Node(i));
-    }
-
-    this.links.push(new Link(1, 2));
-    this.links.push(new Link(1, 3));
-    this.links.push(new Link(1, 4));
-    this.links.push(new Link(1, 5));
-    this.links.push(new Link(1, 6));
-    this.links.push(new Link(2, 16));
-    this.links.push(new Link(4, 21));
-    this.links.push(new Link(5, 26));
-    this.links.push(new Link(6, 7));
-    this.links.push(new Link(7, 8));
-    this.links.push(new Link(7, 9));
-    this.links.push(new Link(7, 10));
-    this.links.push(new Link(7, 11));
-    this.links.push(new Link(7, 12));
-    this.links.push(new Link(7, 13));
-    this.links.push(new Link(9, 14));
-    this.links.push(new Link(9, 15));
-    this.links.push(new Link(16, 17));
-    this.links.push(new Link(16, 18));
-    this.links.push(new Link(16, 19));
-    this.links.push(new Link(16, 20));
-    this.links.push(new Link(21, 22));
-    this.links.push(new Link(21, 23));
-    this.links.push(new Link(21, 24));
-    this.links.push(new Link(21, 25));
-    this.links.push(new Link(26, 27));
-    this.links.push(new Link(26, 28));
-
-    for (let i = 1; i <= N; i++) {
-      this.links.forEach((link) => {
-        if (+link.source === i || +link.target === i) {
-          this.nodes[getIndex(i)].linkCount++;
-        }
-      });
-    }
-    this.nodes[0].x = 0;
-    this.nodes[0].y = 0;
-    for (let i = 1; i < N; i++) {
-      this.nodes[i].x = this.nodes[i - 1].x + 10;
-      this.nodes[i].y = this.nodes[i - 1].y;
-    }
-  }
+  constructor() {}
 }
