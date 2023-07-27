@@ -1,0 +1,12 @@
+<p>Graph</p>
+<svg #svg [attr.width]="options.width" [attr.height]="options.height">
+  <g [zoomableOf]="svg">
+    <g [linkVisual]="link" class="link" *ngFor="let link of links"></g>
+    <g
+      [nodeVisual]="node" class="node"
+      *ngFor="let node of nodes"
+      [draggableNode]="node"
+      [draggableInGraph]="graph"
+    ></g>
+  </g>
+</svg>
