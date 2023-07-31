@@ -17,37 +17,48 @@ export class AppComponent {
       getIndex = (number) => number - 1;
 
     /** constructing the nodes array */
-    for (let i = 1; i <= N; i++) {
-      this.nodes.push(new Node(i));
-    }
 
     this.links.push(new Link(1, 2));
-    this.links.push(new Link(1, 3));
-    this.links.push(new Link(1, 4));
-    this.links.push(new Link(1, 5));
-    this.links.push(new Link(1, 6));
     this.links.push(new Link(2, 16));
-    this.links.push(new Link(4, 21));
-    this.links.push(new Link(5, 26));
-    this.links.push(new Link(6, 7));
-    this.links.push(new Link(7, 8));
-    this.links.push(new Link(7, 9));
-    this.links.push(new Link(7, 10));
-    this.links.push(new Link(7, 11));
-    this.links.push(new Link(7, 12));
-    this.links.push(new Link(7, 13));
-    this.links.push(new Link(9, 14));
-    this.links.push(new Link(9, 15));
     this.links.push(new Link(16, 17));
     this.links.push(new Link(16, 18));
     this.links.push(new Link(16, 19));
     this.links.push(new Link(16, 20));
+    this.links.push(new Link(20, 22));
+    this.links.push(new Link(1, 3));
+    this.links.push(new Link(1, 4));
+    this.links.push(new Link(4, 21));
     this.links.push(new Link(21, 22));
     this.links.push(new Link(21, 23));
     this.links.push(new Link(21, 24));
     this.links.push(new Link(21, 25));
+    this.links.push(new Link(1, 5));
+    this.links.push(new Link(5, 26));
     this.links.push(new Link(26, 27));
     this.links.push(new Link(26, 28));
+    this.links.push(new Link(1, 6));
+    this.links.push(new Link(6, 7));
+    this.links.push(new Link(7, 8));
+    this.links.push(new Link(7, 9));
+    this.links.push(new Link(9, 14));
+    this.links.push(new Link(9, 15));
+    this.links.push(new Link(7, 10));
+    this.links.push(new Link(7, 11));
+    this.links.push(new Link(7, 12));
+    this.links.push(new Link(7, 13));
+
+    this.links.forEach((link) => {
+      if (!this.nodes.find((node) => node.id === +link.source)) {
+        this.nodes.push(new Node(+link.source));
+      }
+      if (!this.nodes.find((node) => node.id === +link.target)) {
+        this.nodes.push(new Node(+link.target));
+      }
+    });
+
+    // for (let i = 1; i <= N; i++) {
+    //   this.nodes.push(new Node(i));
+    // }
 
     for (let i = 1; i <= N; i++) {
       this.links.forEach((link) => {
@@ -56,6 +67,8 @@ export class AppComponent {
         }
       });
     }
+    console.log(this.links);
+    
     this.nodes[0].x = 0;
     this.nodes[0].y = 0;
     for (let i = 1; i < N; i++) {
